@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-28",
+  "day_n": 28,
+  "total_days": null,
+  "meme": {
+    "url": "https://i.imgflip.com/4t0m5.jpg",
+    "vi": "Tôi sau khi đọc hết Slack lúc 8h sáng.",
+    "en": "Me after reading all of Slack at 8am."
+  },
+  "lesson": {
+    "topic": "Git",
+    "vi": "git bisect tìm commit gây lỗi bằng tìm kiếm nhị phân. 1000 commit chỉ cần khoảng 10 lần kiểm tra. Học lệnh này một lần, tiết kiệm nhiều giờ về sau.",
+    "en": "git bisect finds the breaking commit by binary search. 1000 commits take about 10 checks. Learn it once, save hours later."
+  },
+  "skill": {
+    "name": "Dockerize something",
+    "vi": "Đóng gói một project cá nhân vào một Dockerfile chạy được bằng một lệnh.",
+    "en": "Put a personal project into a Dockerfile that runs with one command."
+  },
+  "ask_question": true
+}
