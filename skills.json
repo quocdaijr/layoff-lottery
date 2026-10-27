@@ -1,0 +1,12 @@
+[
+  {"name": "Explain a query plan", "vi": "Hôm nay chạy EXPLAIN trên một query bạn hay dùng và đọc hiểu từng dòng.", "en": "Today, run EXPLAIN on a query you use often and read every line of the plan."},
+  {"name": "Write a one-paragraph design doc", "vi": "Viết một đoạn mô tả thiết kế cho tính năng gần nhất bạn làm: vấn đề, giải pháp, cái bạn đã bỏ qua.", "en": "Write one paragraph describing the design of your last feature: the problem, the solution, what you left out."},
+  {"name": "Ship a tiny CLI", "vi": "Viết một script 30 dòng tự động hóa một việc bạn làm tay mỗi tuần.", "en": "Write a 30-line script automating one thing you do by hand every week."},
+  {"name": "Speak for 2 minutes", "vi": "Ghi âm bạn giải thích công việc hiện tại bằng tiếng Anh trong 2 phút. Nghe lại.", "en": "Record yourself explaining your current job in English for 2 minutes. Listen back."},
+  {"name": "Read one RFC section", "vi": "Đọc một mục của RFC 9110 (HTTP semantics). Chỉ một mục.", "en": "Read one section of RFC 9110 (HTTP semantics). Just one."},
+  {"name": "Profile before optimizing", "vi": "Chọn một endpoint chậm, đo thời gian từng bước trước khi sửa bất cứ gì.", "en": "Pick one slow endpoint and time each step before changing anything."},
+  {"name": "Write a failing test first", "vi": "Lần sửa bug tiếp theo: viết test tái hiện bug trước, rồi mới sửa.", "en": "Next bug fix: write the test that reproduces it first, then fix."},
+  {"name": "Dockerize something", "vi": "Đóng gói một project cá nhân vào một Dockerfile chạy được bằng một lệnh.", "en": "Put a personal project into a Dockerfile that runs with one command."},
+  {"name": "Reach out to one person", "vi": "Nhắn cho một người trong ngành bạn chưa nói chuyện 6 tháng. Chỉ hỏi thăm.", "en": "Message one person in the industry you have not talked to in 6 months. Just say hi."},
+  {"name": "Delete code", "vi": "Tìm và xóa một đoạn code chết trong project bạn đang làm.", "en": "Find and delete one piece of dead code in the project you work on."}
+]

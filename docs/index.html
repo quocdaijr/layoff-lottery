@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Layoff Lottery</title>
+<style>
+  :root { --bg:#14161a; --card:#1e2127; --fg:#e6e6e6; --muted:#8b919c; --accent:#f5c518; --line:#2c3039; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  main { max-width:680px; margin:0 auto; padding:16px; }
+  header { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+  h1 { font-size:1.25rem; margin:0; }
+  button, input { font:inherit; color:var(--fg); background:var(--card); border:1px solid var(--line); border-radius:8px; padding:6px 10px; }
+  button { cursor:pointer; }
+  .counter { font-size:2.2rem; font-weight:700; color:var(--accent); margin:12px 0 0; }
+  .sub { color:var(--muted); margin:0 0 16px; }
+  .dates { display:flex; gap:8px; flex-wrap:wrap; align-items:end; margin-bottom:16px; }
+  .dates label { display:flex; flex-direction:column; font-size:.8rem; color:var(--muted); gap:4px; }
+  .note { font-size:.8rem; color:var(--muted); width:100%; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
+  .card img { width:100%; border-radius:8px; display:block; margin-bottom:8px; }
+  .cap { color:var(--muted); font-size:.9rem; margin-bottom:12px; }
+  .row { margin:10px 0; }
+  .row b { color:var(--accent); }
+  textarea { width:100%; min-height:70px; font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:8px; }
+  .timeline { display:flex; gap:6px; flex-wrap:wrap; }
+  .timeline button { padding:4px 8px; font-size:.85rem; }
+  .timeline button.on { border-color:var(--accent); color:var(--accent); }
+  .answer { color:var(--muted); font-size:.9rem; white-space:pre-wrap; }
+  .empty { color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>🎟 Layoff Lottery</h1>
+    <button id="lang"></button>
+  </header>
+  <p class="counter" id="counter">—</p>
+  <p class="sub" id="sub"></p>
+
+  <div class="dates">
+    <label><span data-t="start"></span><input type="date" id="start"></label>
+    <label><span data-t="end"></span><input type="date" id="end"></label>
+    <button id="reset" data-t="reset"></button>
+    <span class="note" data-t="note"></span>
+  </div>
+
+  <section class="card" id="card"><p class="empty" data-t="nocard"></p></section>
+
+  <h2 style="font-size:1rem" data-t="history"></h2>
+  <div class="timeline" id="timeline"></div>
+</main>
+
+<script>
+const T = {
+  vi: { start:"Ngày bắt đầu", end:"Ngày kết thúc (tùy chọn)", reset:"Dùng config", note:"Telegram dùng docs/config.json; ô này chỉ xem thử.",
+        day:"Ngày", survived:"sống sót", tickets:"vé đã gom", open:"không có ngày kết thúc", nocard:"Chưa có thẻ nào. Chạy workflow một lần.",
+        history:"Lịch sử", lesson:"Kiến thức", skill:"Kỹ năng mới", question:"Sao hôm nay chưa phải ngày cuối?", ph:"Trả lời của bạn (lưu trên máy này)" },
+  en: { start:"Start date", end:"End date (optional)", reset:"Use config", note:"Telegram uses docs/config.json; these inputs are preview only.",
+        day:"Day", survived:"survived", tickets:"tickets collected", open:"no end date", nocard:"No cards yet. Run the workflow once.",
+        history:"History", lesson:"Lesson", skill:"New skill", question:"Why isn't today the end date?", ph:"Your answer (saved on this device)" },
+};
+const ls = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+const $ = id => document.getElementById(id);
+let lang = ls.get("ll.lang", "vi"), config = {}, days = [], cards = {}, selected = null;
+
+const isoToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const dayDiff = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
+const dates = () => ({ ...{ start: config.start_date, end: config.end_date }, ...ls.get("ll.dates", {}) });
+
+function applyText() {
+  document.documentElement.lang = lang;
+  $("lang").textContent = lang === "vi" ? "EN" : "VI";
+  document.querySelectorAll("[data-t]").forEach(el => el.textContent = T[lang][el.dataset.t]);
+}
+
+function renderCounter() {
+  const d = dates(), t = T[lang], today = isoToday();
+  const n = Math.max(0, dayDiff(d.start, today) + 1);
+  const total = d.end ? dayDiff(d.start, d.end) + 1 : null;
+  $("counter").textContent = total ? `${t.day} ${n}/${total}` : `${t.day} ${n}`;
+  $("sub").textContent = `${t.survived} · ${n} ${t.tickets} · ${total ? "" : t.open}`.replace(/ · $/, "");
+  $("start").value = d.start || ""; $("end").value = d.end || "";
+}
+
+function renderCard() {
+  const c = cards[selected], t = T[lang], box = $("card");
+  if (!c) { box.innerHTML = `<p class="empty">${t.nocard}</p>`; return; }
+  const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[ch]));
+  const total = c.total_days ? `/${c.total_days}` : "";
+  const key = `ll.answer.${c.date}`, saved = ls.get(key, "");
+  box.innerHTML = `
+    <div class="row"><b>${c.date}</b> · ${t.day} ${c.day_n}${total}</div>
+    <img src="${esc(c.meme.url)}" alt="meme" loading="lazy">
+    <div class="cap">${esc(c.meme[lang])}</div>
+    <div class="row"><b>${t.lesson} · ${esc(c.lesson.topic)}</b><br>${esc(c.lesson[lang])}</div>
+    <div class="row"><b>${t.skill} · ${esc(c.skill.name)}</b><br>${esc(c.skill[lang])}</div>
+    ${c.ask_question ? `<div class="row"><b>❓ ${t.question}</b><br><textarea id="answer" placeholder="${t.ph}">${esc(saved)}</textarea></div>` : ""}`;
+  const ta = $("answer");
+  if (ta) ta.addEventListener("input", () => ls.set(key, ta.value));
+}
+
+function renderTimeline() {
+  const tl = $("timeline"); tl.innerHTML = "";
+  [...days].reverse().forEach(d => {
+    const b = document.createElement("button");
+    b.textContent = d.slice(5); b.title = d;
+    b.className = d === selected ? "on" : "";
+    const a = ls.get(`ll.answer.${d}`, "");
+    if (a) b.textContent += " ✎";
+    b.onclick = async () => { if (!cards[d]) { try { cards[d] = await getJson(`data/${d}.json`); } catch (e) { console.error(e); } } selected = d; render(); };
+    tl.appendChild(b);
+  });
+}
+
+function render() { applyText(); renderCounter(); renderCard(); renderTimeline(); }
+
+async function getJson(url) {
+  const r = await fetch(url, { cache: "no-store" });
+  if (!r.ok) throw new Error(`${url}: ${r.status}`);
+  return r.json();
+}
+
+async function init() {
+  try { config = await getJson("config.json"); } catch (e) { console.error(e); config = { start_date: isoToday(), end_date: null }; }
+  try { days = await getJson("data/index.json"); } catch { days = []; }
+  const recent = days.slice(-30);
+  await Promise.all(recent.map(async d => { try { cards[d] = await getJson(`data/${d}.json`); } catch (e) { console.error(e); } }));
+  selected = recent[recent.length - 1] || null;
+  $("lang").onclick = () => { lang = lang === "vi" ? "en" : "vi"; ls.set("ll.lang", lang); render(); };
+  $("start").onchange = $("end").onchange = () => { ls.set("ll.dates", { start: $("start").value || config.start_date, end: $("end").value || null }); render(); };
+  $("reset").onclick = () => { ls.del("ll.dates"); render(); };
+  render();
+}
+init();
+</script>
+</body>
+</html>
