@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-28",
+  "day_n": 136,
+  "total_days": null,
+  "meme": {
+    "url": "https://i.imgflip.com/9ehk.jpg",
+    "vi": "Sếp: 'Chúng ta là một gia đình.' Cũng sếp: 'Tái cấu trúc.'",
+    "en": "Boss: 'We are a family.' Also boss: 'Restructuring.'"
+  },
+  "lesson": {
+    "topic": "Interviewing",
+    "vi": "Khi được hỏi 'kể về một lỗi bạn gây ra', đừng chọn lỗi nhỏ. Chọn lỗi thật, nói rõ bạn phát hiện thế nào, sửa thế nào, và đã thay đổi quy trình gì để không lặp lại.",
+    "en": "When asked 'tell me about a mistake you made', do not pick a tiny one. Pick a real one, explain how you caught it, how you fixed it, and what process you changed so it never repeats."
+  },
+  "skill": {
+    "name": "Profile before optimizing",
+    "vi": "Chọn một endpoint chậm, đo thời gian từng bước trước khi sửa bất cứ gì.",
+    "en": "Pick one slow endpoint and time each step before changing anything."
+  },
+  "ask_question": true
+}
