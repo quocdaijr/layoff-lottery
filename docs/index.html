@@ -134,6 +134,7 @@ let lang = ls.get("ll.lang", "vi"), cfg = {}, lessons = [], skills = [], days = 
 
 const isoToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const dayDiff = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
+const hasChosen = () => ls.get("ll.mode", null) !== null;
 const mode = () => ls.get("ll.mode", "owner");
 const guestDates = () => ls.get("ll.dates", { start: "", end: "" });
 const dates = () => mode() === "owner" ? { start: cfg.start_date || "", end: cfg.end_date || "" } : guestDates();
@@ -232,7 +233,7 @@ function openDialog() {
 const syncDialog = () => $("guestDates").classList.toggle("hidden", document.querySelector("input[name=mode]:checked").value !== "guest");
 
 function saveDialog() {
-  if ($("dlg").returnValue !== "save") return;
+  if ($("dlg").returnValue !== "save") { if (!hasChosen()) ls.set("ll.mode", "owner"); return; }
   const m = document.querySelector("input[name=mode]:checked").value;
   ls.set("ll.mode", m);
   if (m === "guest") {
@@ -260,7 +261,7 @@ async function init() {
   $("dlg").addEventListener("close", saveDialog);
   $("why").addEventListener("input", () => ls.set("ll.why", $("why").value));
   render();
-  if (mode() === "guest" && !guestDates().start) openDialog();
+  if (!hasChosen() || (mode() === "guest" && !guestDates().start)) openDialog();
 }
 init();
 </script>
