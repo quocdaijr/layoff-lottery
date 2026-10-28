@@ -45,6 +45,10 @@
   .timeline button { padding:4px 8px; font-size:.85rem; }
   .timeline button.on { border-color:var(--accent); color:var(--accent); }
   .hidden { display:none; }
+  .owner { display:flex; gap:14px; align-items:center; }
+  .owner img { width:64px; height:64px; border-radius:50%; object-fit:cover; flex:none; }
+  .owner .q { color:var(--muted); font-size:.9rem; font-style:italic; margin:4px 0; }
+  .owner .links a { color:var(--accent); font-size:.85rem; margin-right:10px; text-decoration:none; }
 </style>
 </head>
 <body>
@@ -71,6 +75,8 @@
       <menu><button value="cancel" data-t="cancel"></button><button value="save" data-t="save"></button></menu>
     </form>
   </dialog>
+
+  <section class="card owner hidden" id="ownerCard"></section>
 
   <section id="personal" class="hidden">
     <section class="card">
@@ -175,6 +181,17 @@ function renderPersonal(n) {
   $("why").value = ls.get("ll.why", "");
 }
 
+function renderOwner() {
+  const o = cfg.owner, box = $("ownerCard");
+  box.classList.toggle("hidden", mode() !== "owner" || !o);
+  if (!o || mode() !== "owner") return;
+  const links = Object.entries(o.links || {}).map(([k, v]) => `<a href="${esc(v)}" target="_blank" rel="noopener">${esc(k)}</a>`).join("");
+  box.innerHTML = `${o.avatar ? `<img src="${esc(o.avatar)}" alt="">` : ""}<div>
+    <b><a href="${esc(o.site || "#")}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(o.name || "")}</a></b> · ${esc(o.role || "")}
+    ${o.quote ? `<div class="q">“${esc(o.quote[lang] || o.quote.vi || "")}”</div>` : ""}
+    <div class="links">${links}</div></div>`;
+}
+
 function renderCard() {
   const c = cards[selected], t = T[lang], box = $("card");
   if (!c) { box.innerHTML = ""; return; }
@@ -203,7 +220,7 @@ function renderTimeline() {
   });
 }
 
-function render() { applyText(); renderPersonal(renderCounter()); renderCard(); renderTimeline(); }
+function render() { applyText(); renderOwner(); renderPersonal(renderCounter()); renderCard(); renderTimeline(); }
 
 function openDialog() {
   const g = guestDates();

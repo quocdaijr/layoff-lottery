@@ -2,5 +2,19 @@
   "start_date": "2026-06-15",
   "end_date": null,
   "timezone": "Asia/Ho_Chi_Minh",
-  "question_chance": 0.3
+  "question_chance": 0.3,
+  "owner": {
+    "name": "Nguyễn Quốc Đại",
+    "role": "Senior Backend Software Engineer",
+    "quote": { "vi": "Giải quyết vấn đề trước, rồi mới viết code.", "en": "Solve the problem first, then write the code." },
+    "avatar": "https://qdjr.dev/profile.jpg",
+    "site": "https://qdjr.dev/",
+    "links": {
+      "GitHub": "https://github.com/quocdaijr",
+      "LinkedIn": "https://www.linkedin.com/in/quocdaijr",
+      "Telegram": "https://t.me/quocdaijr",
+      "Facebook": "https://facebook.com/quocdaijr",
+      "Discord": "https://discord.com/users/quocdaijr"
+    }
+  }
 }
