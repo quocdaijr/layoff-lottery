@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Layoff Lottery</title>
+<meta name="description" content="Every day still employed is a lottery ticket. Count your days, answer the hard question, and see what you could have learned since your start date.">
 <style>
   :root { --bg:#14161a; --card:#1e2127; --fg:#e6e6e6; --muted:#8b919c; --accent:#f5c518; --line:#2c3039; }
   * { box-sizing:border-box; }
@@ -11,24 +12,34 @@
   main { max-width:680px; margin:0 auto; padding:16px; }
   header { display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
   h1 { font-size:1.25rem; margin:0; }
+  h2 { font-size:1rem; margin:24px 0 8px; }
   button, input { font:inherit; color:var(--fg); background:var(--card); border:1px solid var(--line); border-radius:8px; padding:6px 10px; }
   button { cursor:pointer; }
   .counter { font-size:2.2rem; font-weight:700; color:var(--accent); margin:12px 0 0; }
   .sub { color:var(--muted); margin:0 0 16px; }
-  .dates { display:flex; gap:8px; flex-wrap:wrap; align-items:end; margin-bottom:16px; }
+  .dates { display:flex; gap:8px; flex-wrap:wrap; align-items:end; margin-bottom:8px; }
   .dates label { display:flex; flex-direction:column; font-size:.8rem; color:var(--muted); gap:4px; }
-  .note { font-size:.8rem; color:var(--muted); width:100%; }
+  .note { font-size:.8rem; color:var(--muted); }
   .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
   .card img { width:100%; border-radius:8px; display:block; margin-bottom:8px; }
   .cap { color:var(--muted); font-size:.9rem; margin-bottom:12px; }
   .row { margin:10px 0; }
   .row b { color:var(--accent); }
   textarea { width:100%; min-height:70px; font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:8px; }
+  .stats { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:8px; }
+  .stats div { flex:1 1 120px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
+  .stats b { display:block; font-size:1.6rem; color:var(--accent); }
+  .stats span { color:var(--muted); font-size:.85rem; }
+  ul.check { list-style:none; padding:0; margin:0; }
+  ul.check li { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--line); }
+  ul.check input { margin-top:4px; }
+  ul.check li.done { color:var(--muted); text-decoration:line-through; }
+  ul.check li.done b { color:var(--muted); }
   .timeline { display:flex; gap:6px; flex-wrap:wrap; }
   .timeline button { padding:4px 8px; font-size:.85rem; }
   .timeline button.on { border-color:var(--accent); color:var(--accent); }
-  .answer { color:var(--muted); font-size:.9rem; white-space:pre-wrap; }
   .empty { color:var(--muted); }
+  .hidden { display:none; }
 </style>
 </head>
 <body>
@@ -37,30 +48,58 @@
     <h1>🎟 Layoff Lottery</h1>
     <button id="lang"></button>
   </header>
+
   <p class="counter" id="counter">—</p>
   <p class="sub" id="sub"></p>
 
   <div class="dates">
     <label><span data-t="start"></span><input type="date" id="start"></label>
     <label><span data-t="end"></span><input type="date" id="end"></label>
-    <button id="reset" data-t="reset"></button>
-    <span class="note" data-t="note"></span>
+    <button id="clear" data-t="clear"></button>
   </div>
+  <p class="note" data-t="note"></p>
 
-  <section class="card" id="card"><p class="empty" data-t="nocard"></p></section>
+  <section id="personal" class="hidden">
+    <section class="card">
+      <div class="row"><b>❓ <span data-t="why"></span></b></div>
+      <textarea id="why"></textarea>
+    </section>
 
-  <h2 style="font-size:1rem" data-t="history"></h2>
-  <div class="timeline" id="timeline"></div>
+    <h2 data-t="since"></h2>
+    <div class="stats">
+      <div><b id="sDays">0</b><span data-t="days"></span></div>
+      <div><b id="sLessons">0</b><span data-t="lessons"></span></div>
+      <div><b id="sSkills">0</b><span data-t="skills"></span></div>
+    </div>
+    <p class="note" data-t="estNote"></p>
+
+    <h2 data-t="lessonsTitle"></h2>
+    <ul class="check" id="lessonList"></ul>
+    <h2 data-t="skillsTitle"></h2>
+    <ul class="check" id="skillList"></ul>
+  </section>
+
+  <section id="bot" class="hidden">
+    <h2 data-t="history"></h2>
+    <section class="card" id="card"></section>
+    <div class="timeline" id="timeline"></div>
+  </section>
 </main>
 
 <script>
 const T = {
-  vi: { start:"Ngày bắt đầu", end:"Ngày kết thúc (tùy chọn)", reset:"Dùng config", note:"Telegram dùng docs/config.json; ô này chỉ xem thử.",
-        day:"Ngày", survived:"sống sót", tickets:"vé đã gom", open:"không có ngày kết thúc", nocard:"Chưa có thẻ nào. Chạy workflow một lần.",
-        history:"Lịch sử", lesson:"Kiến thức", skill:"Kỹ năng mới", question:"Sao hôm nay chưa phải ngày cuối?", ph:"Trả lời của bạn (lưu trên máy này)" },
-  en: { start:"Start date", end:"End date (optional)", reset:"Use config", note:"Telegram uses docs/config.json; these inputs are preview only.",
-        day:"Day", survived:"survived", tickets:"tickets collected", open:"no end date", nocard:"No cards yet. Run the workflow once.",
-        history:"History", lesson:"Lesson", skill:"New skill", question:"Why isn't today the end date?", ph:"Your answer (saved on this device)" },
+  vi: { start:"Ngày bắt đầu", end:"Ngày kết thúc (tùy chọn)", clear:"Xóa", note:"Dữ liệu chỉ lưu trong trình duyệt này. Không gửi đi đâu.",
+        day:"Ngày", survived:"sống sót", tickets:"vé đã gom", left:"còn", daysLeft:"ngày", open:"không có ngày kết thúc", enter:"Nhập ngày bắt đầu để chơi.",
+        why:"Sao chưa nộp đơn nghỉ việc luôn đi?", whyPh:"Viết câu trả lời thật của bạn. Đọc lại tuần sau.",
+        since:"Từ ngày bắt đầu đến nay", days:"ngày", lessons:"kiến thức có thể học", skills:"kỹ năng có thể thử",
+        estNote:"Ước tính: mỗi ngày một việc. Tích vào cái bạn đã làm thật.", lessonsTitle:"📚 Kiến thức", skillsTitle:"🛠 Kỹ năng",
+        history:"Lịch sử bot Telegram", lesson:"Kiến thức", skill:"Kỹ năng mới", question:"Sao hôm nay chưa phải ngày cuối?", ph:"Trả lời của bạn (lưu trên máy này)" },
+  en: { start:"Start date", end:"End date (optional)", clear:"Clear", note:"Saved only in this browser. Sent nowhere.",
+        day:"Day", survived:"survived", tickets:"tickets collected", left:"", daysLeft:"days left", open:"no end date", enter:"Enter your start date to play.",
+        why:"Why don't you submit your resignation now?", whyPh:"Write your honest answer. Read it again next week.",
+        since:"From your start date until today", days:"days", lessons:"lessons you could learn", skills:"skills you could try",
+        estNote:"Estimate: one thing a day. Tick what you actually did.", lessonsTitle:"📚 Lessons", skillsTitle:"🛠 Skills",
+        history:"Telegram bot history", lesson:"Lesson", skill:"New skill", question:"Why isn't today the end date?", ph:"Your answer (saved on this device)" },
 };
 const ls = {
   get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
@@ -68,31 +107,59 @@ const ls = {
   del(k) { try { localStorage.removeItem(k); } catch {} },
 };
 const $ = id => document.getElementById(id);
-let lang = ls.get("ll.lang", "vi"), config = {}, days = [], cards = {}, selected = null;
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[ch]));
+let lang = ls.get("ll.lang", "vi"), lessons = [], skills = [], days = [], cards = {}, selected = null;
 
 const isoToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const dayDiff = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
-const dates = () => ({ ...{ start: config.start_date, end: config.end_date }, ...ls.get("ll.dates", {}) });
+const dates = () => ls.get("ll.dates", { start: "", end: "" });
+const pickN = (items, n) => items.slice(0, Math.max(0, Math.min(n, items.length)));
 
 function applyText() {
   document.documentElement.lang = lang;
   $("lang").textContent = lang === "vi" ? "EN" : "VI";
   document.querySelectorAll("[data-t]").forEach(el => el.textContent = T[lang][el.dataset.t]);
+  $("why").placeholder = T[lang].whyPh;
 }
 
 function renderCounter() {
   const d = dates(), t = T[lang], today = isoToday();
+  $("start").value = d.start || ""; $("end").value = d.end || "";
+  if (!d.start) { $("counter").textContent = "—"; $("sub").textContent = t.enter; $("personal").classList.add("hidden"); return null; }
   const n = Math.max(0, dayDiff(d.start, today) + 1);
   const total = d.end ? dayDiff(d.start, d.end) + 1 : null;
+  const left = total ? Math.max(0, total - n) : null;
   $("counter").textContent = total ? `${t.day} ${n}/${total}` : `${t.day} ${n}`;
-  $("sub").textContent = `${t.survived} · ${n} ${t.tickets} · ${total ? "" : t.open}`.replace(/ · $/, "");
-  $("start").value = d.start || ""; $("end").value = d.end || "";
+  $("sub").textContent = [t.survived, `${n} ${t.tickets}`, total ? `${t.left} ${left} ${t.daysLeft}`.trim() : t.open].join(" · ");
+  $("personal").classList.remove("hidden");
+  return n;
+}
+
+function renderChecklist(id, items, n, key) {
+  const done = ls.get("ll.done", {});
+  const ul = $(id); ul.innerHTML = "";
+  pickN(items, n).forEach((it, i) => {
+    const k = `${key}${i}`, li = document.createElement("li");
+    li.className = done[k] ? "done" : "";
+    li.innerHTML = `<input type="checkbox" ${done[k] ? "checked" : ""}><div><b>${esc(it.topic || it.name)}</b><br>${esc(it[lang])}</div>`;
+    li.querySelector("input").onchange = e => { const d = { ...ls.get("ll.done", {}), [k]: e.target.checked }; ls.set("ll.done", d); li.className = e.target.checked ? "done" : ""; };
+    ul.appendChild(li);
+  });
+}
+
+function renderPersonal(n) {
+  if (n === null) return;
+  $("sDays").textContent = n;
+  $("sLessons").textContent = pickN(lessons, n).length;
+  $("sSkills").textContent = pickN(skills, n).length;
+  renderChecklist("lessonList", lessons, n, "l");
+  renderChecklist("skillList", skills, n, "s");
+  $("why").value = ls.get("ll.why", "");
 }
 
 function renderCard() {
   const c = cards[selected], t = T[lang], box = $("card");
-  if (!c) { box.innerHTML = `<p class="empty">${t.nocard}</p>`; return; }
-  const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[ch]));
+  if (!c) { box.innerHTML = ""; return; }
   const total = c.total_days ? `/${c.total_days}` : "";
   const key = `ll.answer.${c.date}`, saved = ls.get(key, "");
   box.innerHTML = `
@@ -108,18 +175,17 @@ function renderCard() {
 
 function renderTimeline() {
   const tl = $("timeline"); tl.innerHTML = "";
+  $("bot").classList.toggle("hidden", days.length === 0);
   [...days].reverse().forEach(d => {
     const b = document.createElement("button");
-    b.textContent = d.slice(5); b.title = d;
+    b.textContent = d.slice(5) + (ls.get(`ll.answer.${d}`, "") ? " ✎" : ""); b.title = d;
     b.className = d === selected ? "on" : "";
-    const a = ls.get(`ll.answer.${d}`, "");
-    if (a) b.textContent += " ✎";
     b.onclick = async () => { if (!cards[d]) { try { cards[d] = await getJson(`data/${d}.json`); } catch (e) { console.error(e); } } selected = d; render(); };
     tl.appendChild(b);
   });
 }
 
-function render() { applyText(); renderCounter(); renderCard(); renderTimeline(); }
+function render() { applyText(); renderPersonal(renderCounter()); renderCard(); renderTimeline(); }
 
 async function getJson(url) {
   const r = await fetch(url, { cache: "no-store" });
@@ -128,14 +194,15 @@ async function getJson(url) {
 }
 
 async function init() {
-  try { config = await getJson("config.json"); } catch (e) { console.error(e); config = { start_date: isoToday(), end_date: null }; }
+  try { [lessons, skills] = await Promise.all([getJson("lessons.json"), getJson("skills.json")]); } catch (e) { console.error(e); }
   try { days = await getJson("data/index.json"); } catch { days = []; }
   const recent = days.slice(-30);
   await Promise.all(recent.map(async d => { try { cards[d] = await getJson(`data/${d}.json`); } catch (e) { console.error(e); } }));
   selected = recent[recent.length - 1] || null;
   $("lang").onclick = () => { lang = lang === "vi" ? "en" : "vi"; ls.set("ll.lang", lang); render(); };
-  $("start").onchange = $("end").onchange = () => { ls.set("ll.dates", { start: $("start").value || config.start_date, end: $("end").value || null }); render(); };
-  $("reset").onclick = () => { ls.del("ll.dates"); render(); };
+  $("start").onchange = $("end").onchange = () => { ls.set("ll.dates", { start: $("start").value, end: $("end").value || "" }); render(); };
+  $("clear").onclick = () => { ls.del("ll.dates"); render(); };
+  $("why").addEventListener("input", () => ls.set("ll.why", $("why").value));
   render();
 }
 init();

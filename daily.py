@@ -148,7 +148,7 @@ def main(argv):
             day_n = day_index(start, today)
             card = build_card(
                 today, day_n, total,
-                pick(load("memes.json"), day_n), pick(load("lessons.json"), day_n), pick(load("skills.json"), day_n),
+                pick(load("docs/memes.json"), day_n), pick(load("docs/lessons.json"), day_n), pick(load("docs/skills.json"), day_n),
                 should_ask(today.isoformat(), cfg.get("question_chance", 0.3)),
             )
             if not dry:  # write first: a failed send must not cause a double-send on rerun
