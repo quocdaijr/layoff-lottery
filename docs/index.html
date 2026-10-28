@@ -15,11 +15,17 @@
   h2 { font-size:1rem; margin:24px 0 8px; }
   button, input { font:inherit; color:var(--fg); background:var(--card); border:1px solid var(--line); border-radius:8px; padding:6px 10px; }
   button { cursor:pointer; }
+  button.small { padding:2px 8px; font-size:.8rem; }
   .counter { font-size:2.2rem; font-weight:700; color:var(--accent); margin:12px 0 0; }
-  .sub { color:var(--muted); margin:0 0 16px; }
-  .dates { display:flex; gap:8px; flex-wrap:wrap; align-items:end; margin-bottom:8px; }
-  .dates label { display:flex; flex-direction:column; font-size:.8rem; color:var(--muted); gap:4px; }
+  .sub { color:var(--muted); margin:0 0 4px; }
   .note { font-size:.8rem; color:var(--muted); }
+  dialog { background:var(--card); color:var(--fg); border:1px solid var(--line); border-radius:12px; padding:16px; width:min(92vw,360px); }
+  dialog::backdrop { background:rgba(0,0,0,.6); }
+  dialog h2 { margin:0 0 12px; }
+  .radio { display:block; margin:6px 0; cursor:pointer; }
+  .dates { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 4px; }
+  .dates label { display:flex; flex-direction:column; font-size:.8rem; color:var(--muted); gap:4px; flex:1; }
+  menu { display:flex; justify-content:flex-end; gap:8px; padding:0; margin:12px 0 0; }
   .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
   .card img { width:100%; border-radius:8px; display:block; margin-bottom:8px; }
   .cap { color:var(--muted); font-size:.9rem; margin-bottom:12px; }
@@ -38,7 +44,6 @@
   .timeline { display:flex; gap:6px; flex-wrap:wrap; }
   .timeline button { padding:4px 8px; font-size:.85rem; }
   .timeline button.on { border-color:var(--accent); color:var(--accent); }
-  .empty { color:var(--muted); }
   .hidden { display:none; }
 </style>
 </head>
@@ -51,13 +56,21 @@
 
   <p class="counter" id="counter">—</p>
   <p class="sub" id="sub"></p>
+  <p class="note"><span id="who"></span> <button id="change" class="small" data-t="change"></button></p>
 
-  <div class="dates">
-    <label><span data-t="start"></span><input type="date" id="start"></label>
-    <label><span data-t="end"></span><input type="date" id="end"></label>
-    <button id="clear" data-t="clear"></button>
-  </div>
-  <p class="note" data-t="note"></p>
+  <dialog id="dlg">
+    <form method="dialog">
+      <h2 data-t="setup"></h2>
+      <label class="radio"><input type="radio" name="mode" value="owner"> <span data-t="owner"></span></label>
+      <label class="radio"><input type="radio" name="mode" value="guest"> <span data-t="guest"></span></label>
+      <div id="guestDates" class="dates">
+        <label><span data-t="start"></span><input type="date" id="start"></label>
+        <label><span data-t="end"></span><input type="date" id="end"></label>
+      </div>
+      <p class="note" data-t="note"></p>
+      <menu><button value="cancel" data-t="cancel"></button><button value="save" data-t="save"></button></menu>
+    </form>
+  </dialog>
 
   <section id="personal" class="hidden">
     <section class="card">
@@ -88,13 +101,17 @@
 
 <script>
 const T = {
-  vi: { start:"Ngày bắt đầu", end:"Ngày kết thúc (tùy chọn)", clear:"Xóa", note:"Dữ liệu chỉ lưu trong trình duyệt này. Không gửi đi đâu.",
+  vi: { change:"Đổi", setup:"Xem timeline của ai?", owner:"Chủ bot (ngày lấy từ config, kèm lịch sử Telegram)", guest:"Khách (nhập ngày của bạn, lưu trên máy này)",
+        start:"Ngày bắt đầu", end:"Ngày kết thúc (tùy chọn)", note:"Ngày của khách chỉ lưu trong trình duyệt này. Không gửi đi đâu.", cancel:"Hủy", save:"Lưu",
+        ownerTag:"Chủ bot", guestTag:"Khách", noStart:"chưa có ngày bắt đầu",
         day:"Ngày", survived:"sống sót", tickets:"vé đã gom", left:"còn", daysLeft:"ngày", open:"không có ngày kết thúc", enter:"Nhập ngày bắt đầu để chơi.",
         why:"Sao chưa nộp đơn nghỉ việc luôn đi?", whyPh:"Viết câu trả lời thật của bạn. Đọc lại tuần sau.",
         since:"Từ ngày bắt đầu đến nay", days:"ngày", lessons:"kiến thức có thể học", skills:"kỹ năng có thể thử",
         estNote:"Ước tính: mỗi ngày một việc. Tích vào cái bạn đã làm thật.", lessonsTitle:"📚 Kiến thức", skillsTitle:"🛠 Kỹ năng",
         history:"Lịch sử bot Telegram", lesson:"Kiến thức", skill:"Kỹ năng mới", question:"Sao hôm nay chưa phải ngày cuối?", ph:"Trả lời của bạn (lưu trên máy này)" },
-  en: { start:"Start date", end:"End date (optional)", clear:"Clear", note:"Saved only in this browser. Sent nowhere.",
+  en: { change:"Change", setup:"Whose timeline?", owner:"Bot owner (dates from config, with Telegram history)", guest:"Guest (your own dates, saved on this device)",
+        start:"Start date", end:"End date (optional)", note:"Guest dates are saved only in this browser. Sent nowhere.", cancel:"Cancel", save:"Save",
+        ownerTag:"Bot owner", guestTag:"Guest", noStart:"no start date yet",
         day:"Day", survived:"survived", tickets:"tickets collected", left:"", daysLeft:"days left", open:"no end date", enter:"Enter your start date to play.",
         why:"Why don't you submit your resignation now?", whyPh:"Write your honest answer. Read it again next week.",
         since:"From your start date until today", days:"days", lessons:"lessons you could learn", skills:"skills you could try",
@@ -104,15 +121,16 @@ const T = {
 const ls = {
   get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
-  del(k) { try { localStorage.removeItem(k); } catch {} },
 };
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[ch]));
-let lang = ls.get("ll.lang", "vi"), lessons = [], skills = [], days = [], cards = {}, selected = null;
+let lang = ls.get("ll.lang", "vi"), cfg = {}, lessons = [], skills = [], days = [], cards = {}, selected = null;
 
 const isoToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 const dayDiff = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
-const dates = () => ls.get("ll.dates", { start: "", end: "" });
+const mode = () => ls.get("ll.mode", "owner");
+const guestDates = () => ls.get("ll.dates", { start: "", end: "" });
+const dates = () => mode() === "owner" ? { start: cfg.start_date || "", end: cfg.end_date || "" } : guestDates();
 const pickN = (items, n) => items.slice(0, Math.max(0, Math.min(n, items.length)));
 
 function applyText() {
@@ -123,8 +141,8 @@ function applyText() {
 }
 
 function renderCounter() {
-  const d = dates(), t = T[lang], today = isoToday();
-  $("start").value = d.start || ""; $("end").value = d.end || "";
+  const d = dates(), t = T[lang], today = isoToday(), isOwner = mode() === "owner";
+  $("who").textContent = `${isOwner ? t.ownerTag : t.guestTag} · ${d.start ? `${d.start} → ${d.end || t.open}` : t.noStart}`;
   if (!d.start) { $("counter").textContent = "—"; $("sub").textContent = t.enter; $("personal").classList.add("hidden"); return null; }
   const n = Math.max(0, dayDiff(d.start, today) + 1);
   const total = d.end ? dayDiff(d.start, d.end) + 1 : null;
@@ -142,7 +160,7 @@ function renderChecklist(id, items, n, key) {
     const k = `${key}${i}`, li = document.createElement("li");
     li.className = done[k] ? "done" : "";
     li.innerHTML = `<input type="checkbox" ${done[k] ? "checked" : ""}><div><b>${esc(it.topic || it.name)}</b><br>${esc(it[lang])}</div>`;
-    li.querySelector("input").onchange = e => { const d = { ...ls.get("ll.done", {}), [k]: e.target.checked }; ls.set("ll.done", d); li.className = e.target.checked ? "done" : ""; };
+    li.querySelector("input").onchange = e => { ls.set("ll.done", { ...ls.get("ll.done", {}), [k]: e.target.checked }); li.className = e.target.checked ? "done" : ""; };
     ul.appendChild(li);
   });
 }
@@ -175,7 +193,7 @@ function renderCard() {
 
 function renderTimeline() {
   const tl = $("timeline"); tl.innerHTML = "";
-  $("bot").classList.toggle("hidden", days.length === 0);
+  $("bot").classList.toggle("hidden", mode() !== "owner" || days.length === 0);
   [...days].reverse().forEach(d => {
     const b = document.createElement("button");
     b.textContent = d.slice(5) + (ls.get(`ll.answer.${d}`, "") ? " ✎" : ""); b.title = d;
@@ -187,6 +205,26 @@ function renderTimeline() {
 
 function render() { applyText(); renderPersonal(renderCounter()); renderCard(); renderTimeline(); }
 
+function openDialog() {
+  const g = guestDates();
+  document.querySelector(`input[name=mode][value=${mode()}]`).checked = true;
+  $("start").value = g.start || ""; $("end").value = g.end || "";
+  syncDialog();
+  $("dlg").showModal();
+}
+const syncDialog = () => $("guestDates").classList.toggle("hidden", document.querySelector("input[name=mode]:checked").value !== "guest");
+
+function saveDialog() {
+  if ($("dlg").returnValue !== "save") return;
+  const m = document.querySelector("input[name=mode]:checked").value;
+  ls.set("ll.mode", m);
+  if (m === "guest") {
+    const start = $("start").value, end = $("end").value;
+    ls.set("ll.dates", { start, end: end && start && end >= start ? end : "" });
+  }
+  render();
+}
+
 async function getJson(url) {
   const r = await fetch(url, { cache: "no-store" });
   if (!r.ok) throw new Error(`${url}: ${r.status}`);
@@ -194,16 +232,18 @@ async function getJson(url) {
 }
 
 async function init() {
-  try { [lessons, skills] = await Promise.all([getJson("lessons.json"), getJson("skills.json")]); } catch (e) { console.error(e); }
+  try { [cfg, lessons, skills] = await Promise.all([getJson("config.json"), getJson("lessons.json"), getJson("skills.json")]); } catch (e) { console.error(e); }
   try { days = await getJson("data/index.json"); } catch { days = []; }
   const recent = days.slice(-30);
   await Promise.all(recent.map(async d => { try { cards[d] = await getJson(`data/${d}.json`); } catch (e) { console.error(e); } }));
   selected = recent[recent.length - 1] || null;
   $("lang").onclick = () => { lang = lang === "vi" ? "en" : "vi"; ls.set("ll.lang", lang); render(); };
-  $("start").onchange = $("end").onchange = () => { ls.set("ll.dates", { start: $("start").value, end: $("end").value || "" }); render(); };
-  $("clear").onclick = () => { ls.del("ll.dates"); render(); };
+  $("change").onclick = openDialog;
+  document.querySelectorAll("input[name=mode]").forEach(r => r.onchange = syncDialog);
+  $("dlg").addEventListener("close", saveDialog);
   $("why").addEventListener("input", () => ls.set("ll.why", $("why").value));
   render();
+  if (mode() === "guest" && !guestDates().start) openDialog();
 }
 init();
 </script>
