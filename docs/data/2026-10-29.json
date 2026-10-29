@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-29",
+  "day_n": 137,
+  "total_days": null,
+  "meme": {
+    "url": "https://i.imgflip.com/1h7in3.jpg",
+    "vi": "Không bị layoff nếu bạn nghỉ trước.",
+    "en": "Can't get laid off if you quit first."
+  },
+  "lesson": {
+    "topic": "Observability",
+    "vi": "Log không có request ID là log vô dụng khi có 1000 request mỗi giây. Thêm một ID vào đầu request và đưa vào mọi dòng log.",
+    "en": "A log line without a request ID is useless at 1000 requests per second. Generate one ID at the start of each request and include it on every log line."
+  },
+  "skill": {
+    "name": "Write a failing test first",
+    "vi": "Lần sửa bug tiếp theo: viết test tái hiện bug trước, rồi mới sửa.",
+    "en": "Next bug fix: write the test that reproduces it first, then fix."
+  },
+  "ask_question": true
+}
