@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-31",
+  "day_n": 139,
+  "total_days": null,
+  "meme": {
+    "url": "https://i.imgflip.com/1otk96.jpg",
+    "vi": "'cHúNg tA cÓ tHể tĂnG hIệU sUấT vỚi íT nGưỜi hƠn'",
+    "en": "'wE cAn dO mOrE wItH lEsS pEoPlE'"
+  },
+  "lesson": {
+    "topic": "Security",
+    "vi": "Không bao giờ nối chuỗi vào SQL, kể cả khi 'giá trị đó do server sinh ra'. Hôm nay là server sinh ra, ngày mai ai đó đổi nguồn dữ liệu. Luôn dùng parameter binding.",
+    "en": "Never concatenate strings into SQL, even when 'that value is server-generated'. Today it is, tomorrow someone changes the source. Always bind parameters."
+  },
+  "skill": {
+    "name": "Reach out to one person",
+    "vi": "Nhắn cho một người trong ngành bạn chưa nói chuyện 6 tháng. Chỉ hỏi thăm.",
+    "en": "Message one person in the industry you have not talked to in 6 months. Just say hi."
+  },
+  "ask_question": false
+}
