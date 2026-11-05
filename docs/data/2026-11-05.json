@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-05",
+  "day_n": 144,
+  "total_days": null,
+  "meme": {
+    "url": "https://i.imgflip.com/26am.jpg",
+    "vi": "Không biết HR mời họp 1:1 là tăng lương hay là... hẹn gặp lần cuối.",
+    "en": "Not sure if HR 1:1 means a raise or... a goodbye."
+  },
+  "lesson": {
+    "topic": "Networking",
+    "vi": "HTTP keep-alive tái sử dụng kết nối TCP. Một client gọi API 100 lần mà mở 100 kết nối mới là lãng phí 100 lần handshake. Kiểm tra HTTP client của bạn có dùng connection pool không.",
+    "en": "HTTP keep-alive reuses the TCP connection. A client making 100 API calls over 100 fresh connections pays for 100 handshakes. Check that your HTTP client uses a connection pool."
+  },
+  "skill": {
+    "name": "Speak for 2 minutes",
+    "vi": "Ghi âm bạn giải thích công việc hiện tại bằng tiếng Anh trong 2 phút. Nghe lại.",
+    "en": "Record yourself explaining your current job in English for 2 minutes. Listen back."
+  },
+  "ask_question": false
+}
