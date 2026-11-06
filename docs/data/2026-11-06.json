@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-06",
+  "day_n": 145,
+  "total_days": null,
+  "meme": {
+    "url": "https://i.imgflip.com/1g8my4.jpg",
+    "vi": "Học kỹ năng mới / Refresh trang tin layoff lần thứ 40",
+    "en": "Learn a new skill / Refresh the layoff news page for the 40th time"
+  },
+  "lesson": {
+    "topic": "Concurrency",
+    "vi": "Race condition thường xuất hiện ở 'đọc rồi ghi': SELECT balance, rồi UPDATE balance = x. Dùng UPDATE balance = balance - 10 WHERE balance >= 10 để DB tự xử lý nguyên tử.",
+    "en": "Race conditions usually hide in 'read then write': SELECT balance, then UPDATE balance = x. Use UPDATE balance = balance - 10 WHERE balance >= 10 so the database handles it atomically."
+  },
+  "skill": {
+    "name": "Read one RFC section",
+    "vi": "Đọc một mục của RFC 9110 (HTTP semantics). Chỉ một mục.",
+    "en": "Read one section of RFC 9110 (HTTP semantics). Just one."
+  },
+  "ask_question": false
+}
