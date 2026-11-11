@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-11",
+  "day_n": 150,
+  "total_days": null,
+  "meme": {
+    "url": "https://i.imgflip.com/1bgw.jpg",
+    "vi": "Hôm nay vẫn còn việc. Tuyệt.",
+    "en": "Still employed today. Great."
+  },
+  "lesson": {
+    "topic": "Career",
+    "vi": "Cập nhật CV khi còn việc, không phải khi mất việc. Mỗi quý ghi lại 3 thứ bạn đã làm có số liệu đo được.",
+    "en": "Update your CV while employed, not after. Every quarter, write down 3 things you did with measurable numbers."
+  },
+  "skill": {
+    "name": "Delete code",
+    "vi": "Tìm và xóa một đoạn code chết trong project bạn đang làm.",
+    "en": "Find and delete one piece of dead code in the project you work on."
+  },
+  "ask_question": false
+}
