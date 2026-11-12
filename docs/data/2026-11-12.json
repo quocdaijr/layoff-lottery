@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-12",
+  "day_n": 151,
+  "total_days": null,
+  "meme": {
+    "url": "https://i.imgflip.com/1bij.jpg",
+    "vi": "Một người không thể đơn giản... sống sót qua đợt layoff.",
+    "en": "One does not simply... survive the layoff season."
+  },
+  "lesson": {
+    "topic": "System design",
+    "vi": "Cache không phải là giải pháp cho query chậm, nó là cách giấu query chậm. Trước khi cache, hãy EXPLAIN query và xem index. Chỉ cache khi dữ liệu đọc nhiều hơn ghi và chấp nhận được dữ liệu cũ vài giây.",
+    "en": "Caching does not fix a slow query, it hides it. Before caching, EXPLAIN the query and check the index. Cache only when reads vastly outnumber writes and a few seconds of staleness is acceptable."
+  },
+  "skill": {
+    "name": "Explain a query plan",
+    "vi": "Hôm nay chạy EXPLAIN trên một query bạn hay dùng và đọc hiểu từng dòng.",
+    "en": "Today, run EXPLAIN on a query you use often and read every line of the plan."
+  },
+  "ask_question": true
+}
