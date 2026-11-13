@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-13",
+  "day_n": 152,
+  "total_days": null,
+  "meme": {
+    "url": "https://i.imgflip.com/30b1gx.jpg",
+    "vi": "Đọc tin layoff của công ty khác: không. Đọc tin layoff của công ty mình: có.",
+    "en": "Reading layoff news about other companies: no. Reading layoff news about mine: yes."
+  },
+  "lesson": {
+    "topic": "SQL",
+    "vi": "Index composite (a, b) phục vụ WHERE a=... và WHERE a=... AND b=..., nhưng không phục vụ WHERE b=... một mình. Thứ tự cột trong index quyết định tất cả.",
+    "en": "A composite index on (a, b) serves WHERE a=... and WHERE a=... AND b=..., but not WHERE b=... alone. Column order in the index decides everything."
+  },
+  "skill": {
+    "name": "Write a one-paragraph design doc",
+    "vi": "Viết một đoạn mô tả thiết kế cho tính năng gần nhất bạn làm: vấn đề, giải pháp, cái bạn đã bỏ qua.",
+    "en": "Write one paragraph describing the design of your last feature: the problem, the solution, what you left out."
+  },
+  "ask_question": false
+}
