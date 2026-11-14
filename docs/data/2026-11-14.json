@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-14",
+  "day_n": 153,
+  "total_days": null,
+  "meme": {
+    "url": "https://i.imgflip.com/1ur9b0.jpg",
+    "vi": "Tôi / LinkedIn Jobs / Công việc hiện tại",
+    "en": "Me / LinkedIn Jobs / My current job"
+  },
+  "lesson": {
+    "topic": "English",
+    "vi": "Trong meeting, thay vì 'I think maybe we can...', hãy nói 'I suggest we...'. Ngắn hơn, rõ hơn, và nghe tự tin hơn.",
+    "en": "In meetings, instead of 'I think maybe we can...', say 'I suggest we...'. Shorter, clearer, more confident."
+  },
+  "skill": {
+    "name": "Ship a tiny CLI",
+    "vi": "Viết một script 30 dòng tự động hóa một việc bạn làm tay mỗi tuần.",
+    "en": "Write a 30-line script automating one thing you do by hand every week."
+  },
+  "ask_question": false
+}
